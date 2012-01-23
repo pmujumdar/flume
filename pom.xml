@@ -84,6 +84,67 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>hadoop-0.20.2-CDH3B4</id>
+      <activation>
+        <property>
+          <name>!hadoop.profile</name>
+        </property>
+      <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <hadoop.version>0.20.2-CDH3B4</hadoop.version>
+        <hadoop.common.artifact.id>hadoop-core</hadoop.common.artifact.id>
+        <FlushingSeqFile>bar.java</FlushingSeqFile>
+        <RawSeqFile>foo.java</RawSeqFile>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>${hadoop.common.artifact.id}</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+
+    <profile>
+      <id>hadoop-0.23</id>
+      <activation>
+        <property>
+          <name>hadoop.profile</name>
+          <value>23</value>
+        </property>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <hadoop.version>0.23.0-cdh4b1-SNAPSHOT</hadoop.version>
+        <hadoop.common.artifact.id>hadoop-common</hadoop.common.artifact.id>
+        <FlushingSeqFile>**/FlushingSequenceFileWriter.java</FlushingSeqFile>
+        <RawSeqFile>**/RawSequenceFileWriter.java</RawSeqFile>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>${hadoop.common.artifact.id}</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-auth</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+            <version>${hadoop.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+
   </profiles>
 
   <inceptionYear>2009</inceptionYear>
@@ -305,7 +366,7 @@
         <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
 
@@ -355,6 +416,10 @@
           <configuration>
             <source>1.6</source>
             <target>1.6</target>
+	          <excludes>
+              <exclude>${FlushingSeqFile}</exclude>
+              <exclude>${RawSeqFile}</exclude>
+	          </excludes>
           </configuration>
         </plugin>
 
@@ -585,12 +650,6 @@
             <artifactId>jmxri</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-core</artifactId>
-        <version>0.20.2-CDH3B4</version>
       </dependency>
 
       <dependency>
