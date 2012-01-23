@@ -33,7 +33,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import static org.apache.hadoop.util.VersionInfo.getVersion;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
@@ -41,8 +40,7 @@ import org.apache.hadoop.io.SequenceFile.Writer;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.JobContext;
+import static org.apache.hadoop.mapred.SequenceFileOutputFormat.getOutputCompressionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +62,8 @@ public class SequenceFileOutputFormat extends AbstractOutputFormat {
   private Writer writer;
   
   public SequenceFileOutputFormat() {
-    this(getCompType(FlumeConfiguration.get()), new DefaultCodec());
+    this(getOutputCompressionType(new JobConf(FlumeConfiguration.get())),
+         new DefaultCodec());
   }
   
   public SequenceFileOutputFormat(CompressionType compressionType,
@@ -110,7 +109,7 @@ public class SequenceFileOutputFormat extends AbstractOutputFormat {
         if (args.length > 0) {
           codecName = args[0];
           FlumeConfiguration conf = FlumeConfiguration.get();
-          CompressionType compressionType = getCompType(conf);
+          CompressionType compressionType = getOutputCompressionType(new JobConf(conf));
           CompressionCodec codec = CustomDfsSink.getCodec(conf, codecName);
           format = new SequenceFileOutputFormat(compressionType, codec);
         } else {
@@ -130,26 +129,4 @@ public class SequenceFileOutputFormat extends AbstractOutputFormat {
     };
   }
 
-  // Wrapper on getOutputCompressionType that handles both hadoop 0.23
-  // and older ones due to JobConf/JobContext
-  public static CompressionType getCompType(FlumeConfiguration conf) {
-    Object jobObj;
-    Method compMethod;
-
-    try {
-      String tmpVer = getVersion().substring(0, 4);
-      if (tmpVer.compareToIgnoreCase("0.23") < 0) {
-        jobObj = new JobConf(conf);
-        compMethod = org.apache.hadoop.mapred.SequenceFileOutputFormat.class.
-            getMethod("getOutputCompressionType", JobConf.class);
-      } else {
-        jobObj = new Job(conf);
-        compMethod = org.apache.hadoop.mapred.SequenceFileOutputFormat.class.
-            getMethod("getOutputCompressionType", JobContext.class);
-      }
-      return (CompressionType)compMethod.invoke(null, jobObj);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
 }
