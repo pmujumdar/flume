@@ -119,7 +119,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <hadoop.version>0.23.0-cdh4b1-SNAPSHOT</hadoop.version>
+        <hadoop.version>0.23.1-SNAPSHOT</hadoop.version>
         <hadoop.common.artifact.id>hadoop-common</hadoop.common.artifact.id>
         <FlushingSeqFile>**/FlushingSequenceFileWriter.java</FlushingSeqFile>
         <RawSeqFile>**/RawSequenceFileWriter.java</RawSeqFile>
@@ -366,7 +366,7 @@
         <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
 
@@ -399,6 +399,15 @@
       </url>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>apache.staging.https</id>
+      <name>Apache Staging Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
 
